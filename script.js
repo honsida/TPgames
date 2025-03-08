@@ -15,18 +15,19 @@ document.addEventListener('DOMContentLoaded', () => {
     let score = 0;
     let lives = 3;
     let gameRunning = false;
-    let gameSpeed = 2000; // Initial star spawn rate in ms
-    let minSpeed = 500; // Fastest star spawn rate
-    let starFallSpeed = 3; // Initial falling speed
-    let maxStarFallSpeed = 8; // Maximum falling speed
+    let gameSpeed = 3000; // Slower initial star spawn rate (was 2000)
+    let minSpeed = 800; // Slower maximum spawn rate (was 500)
+    let starFallSpeed = 2; // Slower initial falling speed (was 3)
+    let maxStarFallSpeed = 5; // Lower maximum fall speed (was 8)
     let basketPosition = 50; // Percentage from left
-    let basketSpeed = 5; // Movement speed percentage
+    let basketSpeed = 8; // Faster movement speed (was 5)
     let stars = []; // Array to store active stars
     let gameAreaWidth, gameAreaHeight;
     let animationFrameId;
     let spawnInterval;
     let touchStartX = 0;
     let isMobileDevice = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    let starTypes = ['gold', 'blue', 'red', 'purple', 'green']; // Different star types
 
     // Initialize game dimensions
     function updateGameDimensions() {
@@ -88,28 +89,38 @@ document.addEventListener('DOMContentLoaded', () => {
         const star = document.createElement('div');
         star.classList.add('star');
         
+        // Choose a random star type
+        const starType = starTypes[Math.floor(Math.random() * starTypes.length)];
+        star.classList.add(`star-${starType}`);
+        
         // Random horizontal position (5-95% to keep within bounds)
         const starPosition = 5 + Math.random() * 90;
         star.style.left = `${starPosition}%`;
         star.style.top = '0px';
         
-        // Random fall speed for this star
-        const fallSpeed = starFallSpeed + Math.random() * 2;
+        // Random size variation (80-120% of original size)
+        const sizeVariation = 0.8 + Math.random() * 0.4;
+        star.style.transform = `scale(${sizeVariation})`;
+        
+        // Random fall speed for this star - slower for easier gameplay
+        const fallSpeed = starFallSpeed + Math.random() * 1.5;
         
         // Add star to game area and stars array
         gameArea.appendChild(star);
         stars.push({
             element: star,
             position: starPosition,
-            speed: fallSpeed
+            speed: fallSpeed,
+            type: starType,
+            size: sizeVariation
         });
         
-        // Increase difficulty over time
-        if (gameSpeed > minSpeed) {
-            gameSpeed -= 10;
+        // Increase difficulty over time but more gradually
+        if (gameSpeed > minSpeed && score > 50) {
+            gameSpeed -= 5; // Slower difficulty increase (was 10)
         }
-        if (starFallSpeed < maxStarFallSpeed) {
-            starFallSpeed += 0.05;
+        if (starFallSpeed < maxStarFallSpeed && score > 100) {
+            starFallSpeed += 0.02; // Slower speed increase (was 0.05)
         }
         
         // Schedule next star
@@ -121,14 +132,19 @@ document.addEventListener('DOMContentLoaded', () => {
     function updateStars() {
         if (!gameRunning) return;
         
-        const basketLeft = basketPosition - 5; // Basket width adjustment for collision
-        const basketRight = basketPosition + 5;
+        // Make the basket hitbox larger for easier catching
+        const basketLeft = basketPosition - 8; // Was 5
+        const basketRight = basketPosition + 8; // Was 5
         const basketTop = gameAreaHeight - 60; // Basket is 50px high, positioned 10px from bottom
         
         stars.forEach((star, index) => {
             // Move star down
             const starTop = parseFloat(star.element.style.top) + star.speed;
             star.element.style.top = `${starTop}px`;
+            
+            // Add a slight wobble effect to stars
+            const wobble = Math.sin(starTop / 20) * 2;
+            star.element.style.marginLeft = `${wobble}px`;
             
             // Check if star is caught
             if (starTop >= basketTop && 
@@ -138,8 +154,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 gameArea.removeChild(star.element);
                 stars.splice(index, 1);
                 
-                // Update score
-                score += 10;
+                // Update score - different points for different star types
+                let points = 10;
+                if (star.type === 'blue') points = 15;
+                if (star.type === 'purple') points = 20;
+                if (star.type === 'red') points = 25;
+                if (star.type === 'green') points = 30;
+                
+                score += points;
                 scoreElement.textContent = score;
                 
                 // Play catch sound effect (simple beep for now)
@@ -173,8 +195,8 @@ document.addEventListener('DOMContentLoaded', () => {
         // Reset game state
         score = 0;
         lives = 3;
-        gameSpeed = 2000;
-        starFallSpeed = 3;
+        gameSpeed = 3000; // Slower initial speed
+        starFallSpeed = 2; // Slower initial falling
         basketPosition = 50;
         gameRunning = true;
         
@@ -285,14 +307,14 @@ document.addEventListener('DOMContentLoaded', () => {
         updateBasketPosition();
     });
 
-    // Handle window resize
-    window.addEventListener('resize', updateGameDimensions);
-
     // Add a click/tap event for more reliable touch control on iOS
     gameArea.addEventListener('click', (e) => {
         if (!gameRunning) return;
         moveBasketTo(e.clientX);
     });
+
+    // Handle window resize
+    window.addEventListener('resize', updateGameDimensions);
 
     // Initialize game
     updateGameDimensions();

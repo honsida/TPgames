@@ -66,29 +66,79 @@ h1 {
     -ms-user-select: none;
     user-select: none;
     cursor: pointer;
+    /* Add stars to background */
+    background-image: 
+        radial-gradient(white, rgba(255,255,255,.2) 2px, transparent 3px),
+        radial-gradient(white, rgba(255,255,255,.15) 1px, transparent 2px),
+        radial-gradient(white, rgba(255,255,255,.1) 2px, transparent 3px);
+    background-size: 550px 550px, 350px 350px, 250px 250px;
+    background-position: 0 0, 40px 60px, 130px 270px;
 }
 
 #basket {
     width: 80px;
-    height: 50px;
-    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 60"><path d="M10,10 C10,30 90,30 90,10 L100,20 L100,60 L0,60 L0,20 Z" fill="%23A0522D"/></svg>');
-    background-size: contain;
-    background-repeat: no-repeat;
+    height: 60px;
     position: absolute;
     bottom: 10px;
     left: 50%;
     transform: translateX(-50%);
     z-index: 10;
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 70"><defs><linearGradient id="basketGrad" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" style="stop-color:%23D2691E"/><stop offset="100%" style="stop-color:%238B4513"/></linearGradient><linearGradient id="handleGrad" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" style="stop-color:%23A0522D"/><stop offset="50%" style="stop-color:%23CD853F"/><stop offset="100%" style="stop-color:%23A0522D"/></linearGradient></defs><path d="M5,30 C5,15 95,15 95,30 L100,35 L100,70 L0,70 L0,35 Z" fill="url(%23basketGrad)"/><path d="M20,30 C20,10 80,10 80,30" stroke="url(%23handleGrad)" stroke-width="5" fill="none" stroke-linecap="round"/><path d="M10,40 L90,40" stroke="%23CD853F" stroke-width="2"/><path d="M15,50 L85,50" stroke="%23CD853F" stroke-width="2"/><path d="M20,60 L80,60" stroke="%23CD853F" stroke-width="2"/><circle cx="30" cy="45" r="5" fill="%23FFD700"/><circle cx="70" cy="55" r="4" fill="%2387CEEB"/></svg>');
+    background-size: contain;
+    background-repeat: no-repeat;
+    filter: drop-shadow(0 5px 5px rgba(0,0,0,0.5));
+    transition: transform 0.1s ease;
+}
+
+#basket:active {
+    transform: translateX(-50%) scale(1.05);
 }
 
 .star {
     position: absolute;
     width: 30px;
     height: 30px;
-    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 51 48"><path d="M25,1 L31,17 L49,17 L35,29 L40,45 L25,36 L10,45 L15,29 L1,17 L19,17 Z" fill="%23FFD700" stroke="%23FFD700"/></svg>');
     background-size: contain;
     background-repeat: no-repeat;
     z-index: 5;
+    filter: drop-shadow(0 0 5px rgba(255,255,255,0.7));
+    animation: twinkle 1s infinite alternate;
+}
+
+/* Star variations */
+.star-gold {
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 51 48"><defs><radialGradient id="starGrad" cx="50%" cy="50%" r="50%" fx="50%" fy="50%"><stop offset="0%" style="stop-color:%23FFFFFF"/><stop offset="20%" style="stop-color:%23FFFF00"/><stop offset="100%" style="stop-color:%23FFD700"/></radialGradient></defs><path d="M25,1 L31,17 L49,17 L35,29 L40,45 L25,36 L10,45 L15,29 L1,17 L19,17 Z" fill="url(%23starGrad)" stroke="%23FFD700"/></svg>');
+}
+
+.star-blue {
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 51 48"><defs><radialGradient id="starGrad" cx="50%" cy="50%" r="50%" fx="50%" fy="50%"><stop offset="0%" style="stop-color:%23FFFFFF"/><stop offset="20%" style="stop-color:%2387CEFA"/><stop offset="100%" style="stop-color:%231E90FF"/></radialGradient></defs><path d="M25,1 L31,17 L49,17 L35,29 L40,45 L25,36 L10,45 L15,29 L1,17 L19,17 Z" fill="url(%23starGrad)" stroke="%231E90FF"/></svg>');
+    animation-delay: 0.3s;
+}
+
+.star-red {
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 51 48"><defs><radialGradient id="starGrad" cx="50%" cy="50%" r="50%" fx="50%" fy="50%"><stop offset="0%" style="stop-color:%23FFFFFF"/><stop offset="20%" style="stop-color:%23FF6347"/><stop offset="100%" style="stop-color:%23DC143C"/></radialGradient></defs><path d="M25,1 L31,17 L49,17 L35,29 L40,45 L25,36 L10,45 L15,29 L1,17 L19,17 Z" fill="url(%23starGrad)" stroke="%23DC143C"/></svg>');
+    animation-delay: 0.5s;
+}
+
+.star-purple {
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 51 48"><defs><radialGradient id="starGrad" cx="50%" cy="50%" r="50%" fx="50%" fy="50%"><stop offset="0%" style="stop-color:%23FFFFFF"/><stop offset="20%" style="stop-color:%23DA70D6"/><stop offset="100%" style="stop-color:%238A2BE2"/></radialGradient></defs><path d="M25,1 L31,17 L49,17 L35,29 L40,45 L25,36 L10,45 L15,29 L1,17 L19,17 Z" fill="url(%23starGrad)" stroke="%238A2BE2"/></svg>');
+    animation-delay: 0.2s;
+}
+
+.star-green {
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 51 48"><defs><radialGradient id="starGrad" cx="50%" cy="50%" r="50%" fx="50%" fy="50%"><stop offset="0%" style="stop-color:%23FFFFFF"/><stop offset="20%" style="stop-color:%2390EE90"/><stop offset="100%" style="stop-color:%2332CD32"/></radialGradient></defs><path d="M25,1 L31,17 L49,17 L35,29 L40,45 L25,36 L10,45 L15,29 L1,17 L19,17 Z" fill="url(%23starGrad)" stroke="%2332CD32"/></svg>');
+    animation-delay: 0.7s;
+}
+
+@keyframes twinkle {
+    0% {
+        opacity: 0.7;
+        filter: drop-shadow(0 0 3px rgba(255,255,255,0.7));
+    }
+    100% {
+        opacity: 1;
+        filter: drop-shadow(0 0 8px rgba(255,255,255,0.9));
+    }
 }
 
 #start-button, #restart-button, #got-it-button {
@@ -190,13 +240,13 @@ h1 {
     }
     
     #basket {
-        width: 60px;
-        height: 40px;
+        width: 70px;
+        height: 50px;
     }
     
     .star {
-        width: 25px;
-        height: 25px;
+        width: 28px;
+        height: 28px;
     }
     
     .instructions-content {
@@ -210,4 +260,48 @@ h1 {
     .instructions-content p {
         font-size: 1rem;
     }
+}
+
+.star-points {
+    background-color: rgba(0, 0, 0, 0.3);
+    padding: 10px;
+    border-radius: 5px;
+    margin: 15px 0;
+}
+
+.star-type {
+    display: flex;
+    align-items: center;
+    margin: 5px 0;
+    justify-content: center;
+}
+
+.mini-star {
+    width: 20px;
+    height: 20px;
+    display: inline-block;
+    background-size: contain;
+    background-repeat: no-repeat;
+    margin-right: 10px;
+    filter: drop-shadow(0 0 3px rgba(255,255,255,0.7));
+}
+
+.mini-gold {
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 51 48"><defs><radialGradient id="starGrad" cx="50%" cy="50%" r="50%" fx="50%" fy="50%"><stop offset="0%" style="stop-color:%23FFFFFF"/><stop offset="20%" style="stop-color:%23FFFF00"/><stop offset="100%" style="stop-color:%23FFD700"/></radialGradient></defs><path d="M25,1 L31,17 L49,17 L35,29 L40,45 L25,36 L10,45 L15,29 L1,17 L19,17 Z" fill="url(%23starGrad)" stroke="%23FFD700"/></svg>');
+}
+
+.mini-blue {
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 51 48"><defs><radialGradient id="starGrad" cx="50%" cy="50%" r="50%" fx="50%" fy="50%"><stop offset="0%" style="stop-color:%23FFFFFF"/><stop offset="20%" style="stop-color:%2387CEFA"/><stop offset="100%" style="stop-color:%231E90FF"/></radialGradient></defs><path d="M25,1 L31,17 L49,17 L35,29 L40,45 L25,36 L10,45 L15,29 L1,17 L19,17 Z" fill="url(%23starGrad)" stroke="%231E90FF"/></svg>');
+}
+
+.mini-red {
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 51 48"><defs><radialGradient id="starGrad" cx="50%" cy="50%" r="50%" fx="50%" fy="50%"><stop offset="0%" style="stop-color:%23FFFFFF"/><stop offset="20%" style="stop-color:%23FF6347"/><stop offset="100%" style="stop-color:%23DC143C"/></radialGradient></defs><path d="M25,1 L31,17 L49,17 L35,29 L40,45 L25,36 L10,45 L15,29 L1,17 L19,17 Z" fill="url(%23starGrad)" stroke="%23DC143C"/></svg>');
+}
+
+.mini-purple {
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 51 48"><defs><radialGradient id="starGrad" cx="50%" cy="50%" r="50%" fx="50%" fy="50%"><stop offset="0%" style="stop-color:%23FFFFFF"/><stop offset="20%" style="stop-color:%23DA70D6"/><stop offset="100%" style="stop-color:%238A2BE2"/></radialGradient></defs><path d="M25,1 L31,17 L49,17 L35,29 L40,45 L25,36 L10,45 L15,29 L1,17 L19,17 Z" fill="url(%23starGrad)" stroke="%238A2BE2"/></svg>');
+}
+
+.mini-green {
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 51 48"><defs><radialGradient id="starGrad" cx="50%" cy="50%" r="50%" fx="50%" fy="50%"><stop offset="0%" style="stop-color:%23FFFFFF"/><stop offset="20%" style="stop-color:%2390EE90"/><stop offset="100%" style="stop-color:%2332CD32"/></radialGradient></defs><path d="M25,1 L31,17 L49,17 L35,29 L40,45 L25,36 L10,45 L15,29 L1,17 L19,17 Z" fill="url(%23starGrad)" stroke="%2332CD32"/></svg>');
 }

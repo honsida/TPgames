@@ -66,13 +66,60 @@ h1 {
     -ms-user-select: none;
     user-select: none;
     cursor: pointer;
-    /* Add stars to background */
+}
+
+/* Dynamic Milky Way Background */
+#game-area::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: 
+        radial-gradient(ellipse at center, rgba(33, 50, 94, 0.5) 0%, rgba(0, 0, 0, 0) 70%),
+        radial-gradient(ellipse at 30% 40%, rgba(138, 43, 226, 0.2) 0%, rgba(0, 0, 0, 0) 70%),
+        radial-gradient(ellipse at 70% 60%, rgba(30, 144, 255, 0.2) 0%, rgba(0, 0, 0, 0) 70%);
+    z-index: 1;
+    animation: nebula-move 60s infinite alternate;
+}
+
+#game-area::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
     background-image: 
-        radial-gradient(white, rgba(255,255,255,.2) 2px, transparent 3px),
-        radial-gradient(white, rgba(255,255,255,.15) 1px, transparent 2px),
+        radial-gradient(white, rgba(255,255,255,.3) 2px, transparent 3px),
+        radial-gradient(white, rgba(255,255,255,.2) 1px, transparent 2px),
         radial-gradient(white, rgba(255,255,255,.1) 2px, transparent 3px);
     background-size: 550px 550px, 350px 350px, 250px 250px;
     background-position: 0 0, 40px 60px, 130px 270px;
+    z-index: 2;
+    animation: star-twinkle 10s infinite linear;
+}
+
+@keyframes nebula-move {
+    0% {
+        background-position: 0% 0%, 0% 0%, 0% 0%;
+    }
+    100% {
+        background-position: 10% 20%, -5% 10%, 5% -10%;
+    }
+}
+
+@keyframes star-twinkle {
+    0% {
+        opacity: 0.5;
+    }
+    50% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0.5;
+    }
 }
 
 #basket {
@@ -128,6 +175,26 @@ h1 {
 .star-green {
     background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 51 48"><defs><radialGradient id="starGrad" cx="50%" cy="50%" r="50%" fx="50%" fy="50%"><stop offset="0%" style="stop-color:%23FFFFFF"/><stop offset="20%" style="stop-color:%2390EE90"/><stop offset="100%" style="stop-color:%2332CD32"/></radialGradient></defs><path d="M25,1 L31,17 L49,17 L35,29 L40,45 L25,36 L10,45 L15,29 L1,17 L19,17 Z" fill="url(%23starGrad)" stroke="%2332CD32"/></svg>');
     animation-delay: 0.7s;
+}
+
+/* Evil star */
+.star-evil {
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 51 48"><defs><radialGradient id="evilStarGrad" cx="50%" cy="50%" r="50%" fx="50%" fy="50%"><stop offset="0%" style="stop-color:%23FF0000"/><stop offset="40%" style="stop-color:%23800000"/><stop offset="100%" style="stop-color:%23000000"/></radialGradient></defs><path d="M25,1 L31,17 L49,17 L35,29 L40,45 L25,36 L10,45 L15,29 L1,17 L19,17 Z" fill="url(%23evilStarGrad)" stroke="%23FF0000"/></svg>');
+    animation: evil-twinkle 0.7s infinite alternate;
+    filter: drop-shadow(0 0 8px rgba(255,0,0,0.8));
+}
+
+@keyframes evil-twinkle {
+    0% {
+        opacity: 0.7;
+        filter: drop-shadow(0 0 5px rgba(255,0,0,0.7));
+        transform: rotate(0deg) scale(1);
+    }
+    100% {
+        opacity: 1;
+        filter: drop-shadow(0 0 10px rgba(255,0,0,1));
+        transform: rotate(10deg) scale(1.1);
+    }
 }
 
 @keyframes twinkle {
@@ -304,4 +371,32 @@ h1 {
 
 .mini-green {
     background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 51 48"><defs><radialGradient id="starGrad" cx="50%" cy="50%" r="50%" fx="50%" fy="50%"><stop offset="0%" style="stop-color:%23FFFFFF"/><stop offset="20%" style="stop-color:%2390EE90"/><stop offset="100%" style="stop-color:%2332CD32"/></radialGradient></defs><path d="M25,1 L31,17 L49,17 L35,29 L40,45 L25,36 L10,45 L15,29 L1,17 L19,17 Z" fill="url(%23starGrad)" stroke="%2332CD32"/></svg>');
+}
+
+.mini-evil {
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 51 48"><defs><radialGradient id="evilStarGrad" cx="50%" cy="50%" r="50%" fx="50%" fy="50%"><stop offset="0%" style="stop-color:%23FF0000"/><stop offset="40%" style="stop-color:%23800000"/><stop offset="100%" style="stop-color:%23000000"/></radialGradient></defs><path d="M25,1 L31,17 L49,17 L35,29 L40,45 L25,36 L10,45 L15,29 L1,17 L19,17 Z" fill="url(%23evilStarGrad)" stroke="%23FF0000"/></svg>');
+    filter: drop-shadow(0 0 5px rgba(255,0,0,0.8));
+}
+
+.evil-warning {
+    color: #ff3333;
+    font-weight: bold;
+    margin-top: 10px;
+    padding: 5px;
+    border: 1px solid #ff3333;
+    border-radius: 5px;
+    background-color: rgba(255, 0, 0, 0.1);
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(255, 0, 0, 0.4);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(255, 0, 0, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(255, 0, 0, 0);
+    }
 }

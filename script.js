@@ -28,6 +28,10 @@ document.addEventListener('DOMContentLoaded', () => {
     let touchStartX = 0;
     let isMobileDevice = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
     let starTypes = ['gold', 'blue', 'red', 'purple', 'green']; // Different star types
+    let evilStarChance = 0.15; // 15% chance of spawning an evil star
+    let evilStarSpeedMultiplier = 1.5; // Evil stars fall faster
+    let lastEvilStarTime = 0; // Track when the last evil star was spawned
+    let evilStarCooldown = 5000; // Minimum time between evil stars (ms)
 
     // Initialize game dimensions
     function updateGameDimensions() {
@@ -89,8 +93,24 @@ document.addEventListener('DOMContentLoaded', () => {
         const star = document.createElement('div');
         star.classList.add('star');
         
-        // Choose a random star type
-        const starType = starTypes[Math.floor(Math.random() * starTypes.length)];
+        // Determine if this will be an evil star
+        const now = Date.now();
+        const isEvil = Math.random() < evilStarChance && (now - lastEvilStarTime > evilStarCooldown);
+        
+        let starType;
+        if (isEvil) {
+            starType = 'evil';
+            lastEvilStarTime = now;
+            
+            // Play evil star sound
+            const evilSound = new Audio('data:audio/wav;base64,UklGRl9vT19XQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YU' + Array(100).join('B'));
+            evilSound.volume = 0.3;
+            evilSound.play().catch(e => console.log('Audio play failed:', e));
+        } else {
+            // Choose a random regular star type
+            starType = starTypes[Math.floor(Math.random() * starTypes.length)];
+        }
+        
         star.classList.add(`star-${starType}`);
         
         // Random horizontal position (5-95% to keep within bounds)
@@ -102,8 +122,11 @@ document.addEventListener('DOMContentLoaded', () => {
         const sizeVariation = 0.8 + Math.random() * 0.4;
         star.style.transform = `scale(${sizeVariation})`;
         
-        // Random fall speed for this star - slower for easier gameplay
-        const fallSpeed = starFallSpeed + Math.random() * 1.5;
+        // Random fall speed for this star - evil stars fall faster
+        let fallSpeed = starFallSpeed + Math.random() * 1.5;
+        if (isEvil) {
+            fallSpeed *= evilStarSpeedMultiplier;
+        }
         
         // Add star to game area and stars array
         gameArea.appendChild(star);
@@ -112,7 +135,8 @@ document.addEventListener('DOMContentLoaded', () => {
             position: starPosition,
             speed: fallSpeed,
             type: starType,
-            size: sizeVariation
+            size: sizeVariation,
+            isEvil: isEvil
         });
         
         // Increase difficulty over time but more gradually
@@ -121,6 +145,11 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         if (starFallSpeed < maxStarFallSpeed && score > 100) {
             starFallSpeed += 0.02; // Slower speed increase (was 0.05)
+        }
+        
+        // Increase evil star chance as score increases
+        if (score > 200) {
+            evilStarChance = Math.min(0.25, 0.15 + (score - 200) / 1000);
         }
         
         // Schedule next star
@@ -150,24 +179,47 @@ document.addEventListener('DOMContentLoaded', () => {
             if (starTop >= basketTop && 
                 star.position > basketLeft && 
                 star.position < basketRight) {
-                // Star caught
+                
+                // Remove star from game
                 gameArea.removeChild(star.element);
                 stars.splice(index, 1);
                 
-                // Update score - different points for different star types
-                let points = 10;
-                if (star.type === 'blue') points = 15;
-                if (star.type === 'purple') points = 20;
-                if (star.type === 'red') points = 25;
-                if (star.type === 'green') points = 30;
-                
-                score += points;
-                scoreElement.textContent = score;
-                
-                // Play catch sound effect (simple beep for now)
-                const audio = new Audio('data:audio/wav;base64,UklGRl9vT19XQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YU' + Array(300).join('A'));
-                audio.volume = 0.2;
-                audio.play().catch(e => console.log('Audio play failed:', e));
+                if (star.isEvil) {
+                    // Evil star caught - lose a life!
+                    lives--;
+                    livesElement.textContent = lives;
+                    
+                    // Visual feedback for catching evil star
+                    basket.style.filter = 'brightness(0.5) sepia(1) hue-rotate(-50deg) saturate(5)';
+                    setTimeout(() => {
+                        basket.style.filter = 'drop-shadow(0 5px 5px rgba(0,0,0,0.5))';
+                    }, 300);
+                    
+                    // Play evil catch sound
+                    const badSound = new Audio('data:audio/wav;base64,UklGRl9vT19XQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YU' + Array(500).join('C'));
+                    badSound.volume = 0.4;
+                    badSound.play().catch(e => console.log('Audio play failed:', e));
+                    
+                    // Check game over
+                    if (lives <= 0) {
+                        endGame();
+                    }
+                } else {
+                    // Regular star caught - add points
+                    let points = 10;
+                    if (star.type === 'blue') points = 15;
+                    if (star.type === 'purple') points = 20;
+                    if (star.type === 'red') points = 25;
+                    if (star.type === 'green') points = 30;
+                    
+                    score += points;
+                    scoreElement.textContent = score;
+                    
+                    // Play catch sound effect (simple beep for now)
+                    const audio = new Audio('data:audio/wav;base64,UklGRl9vT19XQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YU' + Array(300).join('A'));
+                    audio.volume = 0.2;
+                    audio.play().catch(e => console.log('Audio play failed:', e));
+                }
             }
             // Check if star is missed
             else if (starTop > gameAreaHeight) {
@@ -175,13 +227,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 gameArea.removeChild(star.element);
                 stars.splice(index, 1);
                 
-                // Lose a life
-                lives--;
-                livesElement.textContent = lives;
-                
-                // Check game over
-                if (lives <= 0) {
-                    endGame();
+                // Only lose a life if it's a regular star
+                if (!star.isEvil) {
+                    // Lose a life
+                    lives--;
+                    livesElement.textContent = lives;
+                    
+                    // Check game over
+                    if (lives <= 0) {
+                        endGame();
+                    }
                 }
             }
         });
@@ -199,6 +254,11 @@ document.addEventListener('DOMContentLoaded', () => {
         starFallSpeed = 2; // Slower initial falling
         basketPosition = 50;
         gameRunning = true;
+        evilStarChance = 0.15;
+        lastEvilStarTime = 0;
+        
+        // Reset basket appearance
+        basket.style.filter = 'drop-shadow(0 5px 5px rgba(0,0,0,0.5))';
         
         // Clear any existing stars
         stars.forEach(star => {

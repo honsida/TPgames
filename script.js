@@ -60,14 +60,24 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Move basket to specific position (for direct touch)
     function moveBasketTo(xPosition) {
+        if (!gameRunning) return;
+        
         const rect = gameArea.getBoundingClientRect();
         const relativeX = xPosition - rect.left;
+        
+        // Ensure we have valid coordinates
+        if (isNaN(relativeX) || relativeX < 0 || relativeX > gameAreaWidth) {
+            return;
+        }
+        
+        // Calculate position as percentage
         basketPosition = (relativeX / gameAreaWidth) * 100;
         
         // Keep basket within bounds
         if (basketPosition < 5) basketPosition = 5;
         if (basketPosition > 95) basketPosition = 95;
         
+        // Apply the position
         updateBasketPosition();
     }
 
@@ -231,25 +241,34 @@ document.addEventListener('DOMContentLoaded', () => {
         // Direct positioning on tap (move basket directly to touch position)
         moveBasketTo(touchStartX);
         
-        e.preventDefault(); // Prevent scrolling
+        // Prevent default behavior but in a way that works on iOS Chrome
+        if (e.cancelable) {
+            e.preventDefault();
+        }
     }, { passive: false });
 
     gameArea.addEventListener('touchmove', (e) => {
         if (!gameRunning) return;
         
+        // Get current touch position
         const touchX = e.touches[0].clientX;
         
         // Direct positioning (move basket directly to where finger is)
         moveBasketTo(touchX);
         
-        // Also support swipe-style movement
-        const diffX = touchX - touchStartX;
-        if (Math.abs(diffX) > 5) {
-            touchStartX = touchX;
-        }
+        // Update the reference point for smoother movement
+        touchStartX = touchX;
         
-        e.preventDefault(); // Prevent scrolling
+        // Prevent default behavior but in a way that works on iOS Chrome
+        if (e.cancelable) {
+            e.preventDefault();
+        }
     }, { passive: false });
+
+    // Add touchend event to ensure smooth movement
+    gameArea.addEventListener('touchend', (e) => {
+        touchStartX = 0;
+    });
 
     // Mouse controls
     gameArea.addEventListener('mousemove', (e) => {
@@ -269,11 +288,22 @@ document.addEventListener('DOMContentLoaded', () => {
     // Handle window resize
     window.addEventListener('resize', updateGameDimensions);
 
+    // Add a click/tap event for more reliable touch control on iOS
+    gameArea.addEventListener('click', (e) => {
+        if (!gameRunning) return;
+        moveBasketTo(e.clientX);
+    });
+
     // Initialize game
     updateGameDimensions();
     
     // Show mobile-specific instructions if on mobile
     if (isMobileDevice) {
         document.querySelector('.controls-section').style.backgroundColor = 'rgba(76, 175, 80, 0.3)';
+    }
+    
+    // Force a redraw on iOS devices to ensure proper rendering
+    if (isMobileDevice) {
+        document.body.style.webkitTransform = 'scale(1)';
     }
 });

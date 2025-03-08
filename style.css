@@ -82,7 +82,7 @@ h1 {
     z-index: 5;
 }
 
-#start-button, #restart-button {
+#start-button, #restart-button, #got-it-button {
     background-color: #4CAF50;
     border: none;
     color: white;
@@ -98,7 +98,7 @@ h1 {
     transition: background-color 0.3s;
 }
 
-#start-button:hover, #restart-button:hover {
+#start-button:hover, #restart-button:hover, #got-it-button:hover {
     background-color: #45a049;
 }
 
@@ -112,6 +112,53 @@ h1 {
     border-radius: 10px;
     text-align: center;
     z-index: 20;
+}
+
+.overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.85);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 30;
+}
+
+.instructions-content {
+    background-color: rgba(25, 25, 112, 0.9);
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+    max-width: 90%;
+    border: 2px solid #FFD700;
+}
+
+.instructions-content h2 {
+    color: #FFD700;
+    margin-bottom: 15px;
+    font-size: 1.8rem;
+}
+
+.instructions-content h3 {
+    color: #FFD700;
+    margin: 10px 0;
+    font-size: 1.3rem;
+}
+
+.instructions-content p {
+    margin: 10px 0;
+    font-size: 1.1rem;
+    line-height: 1.4;
+}
+
+.controls-section {
+    background-color: rgba(0, 0, 0, 0.3);
+    padding: 10px;
+    border-radius: 5px;
+    margin: 15px 0;
 }
 
 .hidden {
@@ -141,5 +188,17 @@ h1 {
     .star {
         width: 25px;
         height: 25px;
+    }
+    
+    .instructions-content {
+        padding: 15px;
+    }
+    
+    .instructions-content h2 {
+        font-size: 1.5rem;
+    }
+    
+    .instructions-content p {
+        font-size: 1rem;
     }
 }

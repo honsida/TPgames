@@ -8,6 +8,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const restartButton = document.getElementById('restart-button');
     const gameOverScreen = document.getElementById('game-over');
     const finalScoreElement = document.getElementById('final-score');
+    const instructionsOverlay = document.getElementById('instructions');
+    const gotItButton = document.getElementById('got-it-button');
 
     // Game variables
     let score = 0;
@@ -24,6 +26,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let animationFrameId;
     let spawnInterval;
     let touchStartX = 0;
+    let isMobileDevice = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 
     // Initialize game dimensions
     function updateGameDimensions() {
@@ -53,6 +56,19 @@ document.addEventListener('DOMContentLoaded', () => {
             basketPosition += basketSpeed;
             updateBasketPosition();
         }
+    }
+
+    // Move basket to specific position (for direct touch)
+    function moveBasketTo(xPosition) {
+        const rect = gameArea.getBoundingClientRect();
+        const relativeX = xPosition - rect.left;
+        basketPosition = (relativeX / gameAreaWidth) * 100;
+        
+        // Keep basket within bounds
+        if (basketPosition < 5) basketPosition = 5;
+        if (basketPosition > 95) basketPosition = 95;
+        
+        updateBasketPosition();
     }
 
     // Create a new star
@@ -184,9 +200,15 @@ document.addEventListener('DOMContentLoaded', () => {
         startButton.disabled = false;
     }
 
+    // Hide instructions and show game
+    function hideInstructions() {
+        instructionsOverlay.classList.add('hidden');
+    }
+
     // Event listeners
     startButton.addEventListener('click', startGame);
     restartButton.addEventListener('click', startGame);
+    gotItButton.addEventListener('click', hideInstructions);
 
     // Keyboard controls
     document.addEventListener('keydown', (e) => {
@@ -199,26 +221,33 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Touch controls for mobile
+    // Touch controls for mobile - improved for iPhone
     gameArea.addEventListener('touchstart', (e) => {
         if (!gameRunning) return;
+        
+        // Store initial touch position
         touchStartX = e.touches[0].clientX;
+        
+        // Direct positioning on tap (move basket directly to touch position)
+        moveBasketTo(touchStartX);
+        
         e.preventDefault(); // Prevent scrolling
     }, { passive: false });
 
     gameArea.addEventListener('touchmove', (e) => {
-        if (!gameRunning || !touchStartX) return;
+        if (!gameRunning) return;
         
         const touchX = e.touches[0].clientX;
-        const diffX = touchX - touchStartX;
         
-        if (diffX > 10) {
-            moveBasketRight();
-        } else if (diffX < -10) {
-            moveBasketLeft();
+        // Direct positioning (move basket directly to where finger is)
+        moveBasketTo(touchX);
+        
+        // Also support swipe-style movement
+        const diffX = touchX - touchStartX;
+        if (Math.abs(diffX) > 5) {
+            touchStartX = touchX;
         }
         
-        touchStartX = touchX;
         e.preventDefault(); // Prevent scrolling
     }, { passive: false });
 
@@ -242,4 +271,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Initialize game
     updateGameDimensions();
+    
+    // Show mobile-specific instructions if on mobile
+    if (isMobileDevice) {
+        document.querySelector('.controls-section').style.backgroundColor = 'rgba(76, 175, 80, 0.3)';
+    }
 });
